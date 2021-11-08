@@ -1,6 +1,8 @@
 package org.iesfm.instituto.jdbc.DAO;
 
 import org.iesfm.instituto.jdbc.Student;
+import org.iesfm.instituto.jdbc.Title;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import java.util.HashMap;
@@ -28,6 +30,16 @@ public class StudentDAO {
             ")";
 
     private NamedParameterJdbcTemplate jdbcTemplate;
+
+    private static final RowMapper<Student> STUDENT_ROW_MAPPER = (rs, rownum) ->
+            new Student(
+                    rs.getString("nif"),
+                    rs.getString("student_name"),
+                    rs.getString("student_surname"),
+                    rs.getInt("zipcode"),
+                    rs.getString("address"),
+                    rs.getString("email")
+            );
 
     public StudentDAO(NamedParameterJdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -70,6 +82,15 @@ public class StudentDAO {
                         )
         );
 
+    }
+
+    public List<Student> listStudent() {
+        Map<String, Object> params = new HashMap<>();
+        return jdbcTemplate.query(
+                SELECT_STUDENT,
+                STUDENT_ROW_MAPPER
+
+        );
     }
 
 }
